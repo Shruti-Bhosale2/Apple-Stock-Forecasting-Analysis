@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -219,6 +218,8 @@ if st.button("Generate Forecast"):
     st.plotly_chart(fig_forecast, use_container_width=True)
 
     st.success("Forecast generated successfully")
+
+
 
 
 
