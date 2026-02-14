@@ -30,16 +30,34 @@ df = load_data()
 import requests
 import pickle
 import os
+import streamlit as st
+#https://drive.google.com/file/d/1iTlwtRip5y_GnYQ-8o7RIYH_JYOeBk3Z/view?usp=drive_link
+MODEL_URL = "https://drive.google.com/uc?id=1iTlwtRip5y_GnYQ-8o7RIYH_JYOeBk3Z"
 
-MODEL_URL = "https://drive.google.com/file/d/1iTlwtRip5y_GnYQ-8o7RIYH_JYOeBk3Z/view?usp=drive_link"
+def download_large_file_from_gdrive(url, destination):
+    session = requests.Session()
+    response = session.get(url, stream=True)
 
-if not os.path.exists("sarima_model.pkl"):
-    response = requests.get(MODEL_URL)
-    with open("sarima_model.pkl", "wb") as f:
-        f.write(response.content)
+    for key, value in response.cookies.items():
+        if key.startswith("download_warning"):
+            confirm_token = value
+            params = {"id": url.split("id=")[-1], "confirm": confirm_token}
+            response = session.get("https://drive.google.com/uc", params=params, stream=True)
 
-with open("sarima_model.pkl", "rb") as f:
-    model = pickle.load(f)
+    with open(destination, "wb") as f:
+        for chunk in response.iter_content(32768):
+            if chunk:
+                f.write(chunk)
+
+@st.cache_resource
+def load_model():
+    if not os.path.exists("sarima_model.pkl"):
+        download_large_file_from_gdrive(MODEL_URL, "sarima_model.pkl")
+
+    with open("sarima_model.pkl", "rb") as f:
+        return pickle.load(f)
+
+model = load_model()
 
 # ==========================================================
 # SIDEBAR CONTROLS
@@ -201,4 +219,5 @@ if st.button("Generate Forecast"):
     st.plotly_chart(fig_forecast, use_container_width=True)
 
     st.success("Forecast generated successfully")
+
 
