@@ -27,11 +27,19 @@ df = load_data()
 # ------------------------------------------------
 # LOAD MODEL
 # ------------------------------------------------
-@st.cache_resource
-def load_model():
-    return joblib.load("sarima_model.pkl")
+import requests
+import pickle
+import os
 
-model = load_model()
+MODEL_URL = "https://drive.google.com/file/d/1iTlwtRip5y_GnYQ-8o7RIYH_JYOeBk3Z/view?usp=drive_link"
+
+if not os.path.exists("sarima_model.pkl"):
+    response = requests.get(MODEL_URL)
+    with open("sarima_model.pkl", "wb") as f:
+        f.write(response.content)
+
+with open("sarima_model.pkl", "rb") as f:
+    model = pickle.load(f)
 
 # ==========================================================
 # SIDEBAR CONTROLS
@@ -193,3 +201,4 @@ if st.button("Generate Forecast"):
     st.plotly_chart(fig_forecast, use_container_width=True)
 
     st.success("Forecast generated successfully")
+
