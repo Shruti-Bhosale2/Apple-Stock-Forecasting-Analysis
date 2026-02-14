@@ -32,7 +32,7 @@ import pickle
 import os
 import streamlit as st
 #https://drive.google.com/file/d/1iTlwtRip5y_GnYQ-8o7RIYH_JYOeBk3Z/view?usp=drive_link
-MODEL_URL = "https://drive.google.com/uc?id=1iTlwtRip5y_GnYQ-8o7RIYH_JYOeBk3Z"
+MODEL_URL = "https://drive.google.com/file/d/1iTlwtRip5y_GnYQ-8o7RIYH_JYOeBk3Z/view?usp=drive_link"
 
 def download_large_file_from_gdrive(url, destination):
     session = requests.Session()
@@ -219,5 +219,6 @@ if st.button("Generate Forecast"):
     st.plotly_chart(fig_forecast, use_container_width=True)
 
     st.success("Forecast generated successfully")
+
 
 
